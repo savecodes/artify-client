@@ -1,3 +1,4 @@
+import Footer from "../components/Footer/Footer";
 import Navbar from "../components/Heading/Navbar";
 import ScrollToTop from "../components/ScrollToTop";
 import { Outlet } from "react-router";
@@ -13,7 +14,9 @@ const HomeLayout = () => {
         <main className="flex-1">
           <Outlet />
         </main>
-        <footer>{/* <Footer /> */}</footer>
+        <footer>
+          {/* <Footer /> */}
+          </footer>
       </div>
     </>
   );

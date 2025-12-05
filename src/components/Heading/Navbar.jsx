@@ -5,10 +5,10 @@ import Logo from "../../assets/logo.png";
 import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
     const html = document.querySelector("html");
@@ -95,7 +95,9 @@ const Navbar = () => {
                     >
                       <Settings size={16} className="mr-2" /> Settings
                     </Link>
-                    <button className="flex items-center w-full px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <button
+                    onClick={logOut}
+                    className="flex items-center w-full px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                       <LogOut size={16} className="mr-2" /> Logout
                     </button>
                   </div>
@@ -221,7 +223,10 @@ const Navbar = () => {
                 <Settings size={18} className="mr-3" /> Settings
               </Link>
               <button
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  logOut();
+                  setIsMenuOpen(false);
+                }}
                 className="flex items-center w-full px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               >
                 <LogOut size={18} className="mr-3" /> Logout
