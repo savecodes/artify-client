@@ -47,7 +47,10 @@ const ProfileSettings = () => {
     setLoading(true);
 
     try {
-      if (formData.name !== user.displayName || formData.imageURL !== user.photoURL) {
+      if (
+        formData.name !== user.displayName ||
+        formData.imageURL !== user.photoURL
+      ) {
         await updateUserProfile({
           displayName: formData.name,
           photoURL: formData.imageURL,
@@ -132,7 +135,7 @@ const ProfileSettings = () => {
     );
 
   return (
-    <div className="w-full min-h-screen py-12">
+    <div className="w-full py-12 pb-15">
       <div className="w-10/12 mx-auto max-w-4xl">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
           <div className="bg-linear-to-r from-pink-500 to-purple-600 h-32"></div>
@@ -144,7 +147,9 @@ const ProfileSettings = () => {
                   src={formData.imageURL || user.photoURL}
                   alt="Profile"
                   className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 object-cover shadow-xl"
-                  onError={(e) => (e.target.src = "https://via.placeholder.com/150")}
+                  onError={(e) =>
+                    (e.target.src = "https://via.placeholder.com/150")
+                  }
                 />
               </div>
 
@@ -152,14 +157,17 @@ const ProfileSettings = () => {
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {user.displayName}
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Member</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                  Member
+                </p>
               </div>
 
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 className="flex items-center gap-2 px-6 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                <Edit2 size={18} /> <span>{isEditing ? "Cancel" : "Edit Profile"}</span>
+                <Edit2 size={18} />{" "}
+                <span>{isEditing ? "Cancel" : "Edit Profile"}</span>
               </button>
             </div>
 
@@ -167,7 +175,9 @@ const ProfileSettings = () => {
             <div className="space-y-6">
               {/* Name Field */}
               <div className="grid md:grid-cols-3 gap-4 items-center">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Full Name
+                </label>
                 <div className="md:col-span-2">
                   {isEditing ? (
                     <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3">
@@ -190,7 +200,9 @@ const ProfileSettings = () => {
 
               {/* Email Field */}
               <div className="grid md:grid-cols-3 gap-4 items-center">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Email
+                </label>
                 <div className="md:col-span-2">
                   {isEditing ? (
                     <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3">
@@ -204,14 +216,18 @@ const ProfileSettings = () => {
                       />
                     </div>
                   ) : (
-                    <p className="text-gray-900 dark:text-gray-200 py-3">{user.email || "Not set"}</p>
+                    <p className="text-gray-900 dark:text-gray-200 py-3">
+                      {user.email || "Not set"}
+                    </p>
                   )}
                 </div>
               </div>
 
               {/* Image URL Field */}
               <div className="grid md:grid-cols-3 gap-4 items-center">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile Image URL</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Profile Image URL
+                </label>
                 <div className="md:col-span-2">
                   {isEditing ? (
                     <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3">
@@ -225,7 +241,9 @@ const ProfileSettings = () => {
                       />
                     </div>
                   ) : (
-                    <p className="text-gray-900 dark:text-gray-200 py-3 truncate">{user.photoURL || "Not set"}</p>
+                    <p className="text-gray-900 dark:text-gray-200 py-3 truncate">
+                      {user.photoURL || "Not set"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -235,13 +253,17 @@ const ProfileSettings = () => {
                 <>
                   <div className="flex items-center gap-4 my-6">
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Change Password</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Change Password
+                    </span>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
                   </div>
 
                   {/* Current Password */}
                   <div className="grid md:grid-cols-3 gap-4 items-center">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Password</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Current Password
+                    </label>
                     <div className="md:col-span-2">
                       <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 relative">
                         <Lock size={18} className="text-gray-400 mr-3" />
@@ -255,10 +277,16 @@ const ProfileSettings = () => {
                         />
                         <button
                           type="button"
-                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          onClick={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                          }
                           className="absolute right-4 text-gray-400 hover:text-gray-600"
                         >
-                          {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          {showCurrentPassword ? (
+                            <EyeOff size={18} />
+                          ) : (
+                            <Eye size={18} />
+                          )}
                         </button>
                       </div>
                     </div>
@@ -266,7 +294,9 @@ const ProfileSettings = () => {
 
                   {/* New Password */}
                   <div className="grid md:grid-cols-3 gap-4 items-center">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      New Password
+                    </label>
                     <div className="md:col-span-2">
                       <div className="flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 relative">
                         <Lock size={18} className="text-gray-400 mr-3" />
@@ -283,7 +313,11 @@ const ProfileSettings = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-4 text-gray-400 hover:text-gray-600"
                         >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          {showPassword ? (
+                            <EyeOff size={18} />
+                          ) : (
+                            <Eye size={18} />
+                          )}
                         </button>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">

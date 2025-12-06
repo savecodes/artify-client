@@ -9,6 +9,7 @@ import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import ForgotPassword from "../pages/ForgotPassword";
 import Profile from "../pages/Profile";
+import PrivateRoute from "../context/PrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/add-artwork",
-        element: <AddArtwork />,
+        element: (
+          <PrivateRoute>
+            <AddArtwork />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/my-gallery",

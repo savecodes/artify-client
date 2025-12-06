@@ -12,6 +12,7 @@ import {
   updatePassword as firebaseUpdatePassword,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../firebase/Firebase.config";
 
@@ -19,13 +20,23 @@ const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Create User
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
+
+  // Send Verification Email
+  const sendVerifyEmail = (currentUser) => {
+    return sendEmailVerification(currentUser);
+  };
+
+  // const sendVerifyEmail = () => {
+  //   if (!user) return;
+  //   return sendEmailVerification(user);
+  // };
 
   // SignIn With Google
   const signInWithGoogle = () => {
@@ -66,7 +77,10 @@ const AuthProvider = ({ children }) => {
   // Reauthenticate
   const reauthenticateUser = (currentPassword) => {
     if (!user) return;
-    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      currentPassword
+    );
     return reauthenticateWithCredential(user, credential);
   };
 
@@ -84,6 +98,7 @@ const AuthProvider = ({ children }) => {
     setUser,
     loading,
     createUser,
+    sendVerifyEmail,
     signInUser,
     signInWithGoogle,
     logOut,
@@ -93,7 +108,9 @@ const AuthProvider = ({ children }) => {
     reauthenticateUser,
   };
 
-  return <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

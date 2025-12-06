@@ -16,7 +16,8 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState("");
-  const { signInWithGoogle, createUser, logOut } = useContext(AuthContext);
+  const { signInWithGoogle, createUser, sendVerifyEmail, logOut } =
+    useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -82,15 +83,24 @@ const SignUp = () => {
 
         updateProfile(user, { displayName: name, photoURL: image })
           .then(() => {
-            logOut()
-            Swal.fire({
-              icon: "success",
-              title: "Account Created",
-              text: "Your profile has been set up!",
-              timer: 1500,
-              showConfirmButton: false,
-            });
-            navigate("/login");
+            sendVerifyEmail(user)
+              .then(() => {
+                Swal.fire({
+                  icon: "success",
+                  title: "Account Created!",
+                  text: "Please check your email and verify your account.",
+                });
+
+                logOut();
+                navigate("/login");
+              })
+              .catch((err) => {
+                Swal.fire({
+                  icon: "error",
+                  title: "Verification email failed",
+                  text: err.message,
+                });
+              });
           })
           .catch((err) => {
             Swal.fire({
@@ -210,7 +220,7 @@ const SignUp = () => {
               </button>
             </div>
 
-            {/* Password validation message */}
+            {/* Password validation */}
             {passwordMessage && (
               <p
                 className={`text-sm mt-1 ${
@@ -221,7 +231,7 @@ const SignUp = () => {
               </p>
             )}
 
-            {/* Terms and conditions */}
+            {/* Terms */}
             <div className="w-full mt-6">
               <label className="flex items-center gap-3 cursor-pointer select-none">
                 <input

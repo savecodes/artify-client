@@ -1,13 +1,14 @@
 import { useContext, useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContext";
 import Swal from "sweetalert2";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { signInWithGoogle, signInUser } = useContext(AuthContext);
+  const { signInWithGoogle, signInUser, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation()
 
   // Google Sign In
   const handleGoogleSignIn = () => {
@@ -46,14 +47,26 @@ const SignIn = () => {
     }
 
     signInUser(email, password)
-      .then(() => {
+      .then((result) => {
+        if (!result.user.emailVerified) {
+          Swal.fire({
+            icon: "warning",
+            title: "Email Not Verified!",
+            text: "Please verify your email before login.",
+          });
+
+          logOut();
+          return;
+        }
+
         Swal.fire({
           icon: "success",
           title: "Login Successful",
           timer: 1500,
           showConfirmButton: false,
         });
-        navigate("/");
+
+        navigate(`${location.state? location.state : '/'}`);
       })
       .catch((err) => {
         Swal.fire({
