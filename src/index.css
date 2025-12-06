@@ -9,5 +9,12 @@
 
 * {
   font-family: "Inter", sans-serif;
-  /* overflow: hidden; */
+}
+
+.swiper-pagination-bullet {
+  background: #d1d5db !important;
+  opacity: 1;
+}
+.swiper-pagination-bullet-active {
+  background: #ec4899 !important;
 }

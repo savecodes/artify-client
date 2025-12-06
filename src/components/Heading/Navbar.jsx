@@ -33,11 +33,11 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 py-2">
-        <div className="w-11/12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 py-2">
+        <div className="w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+            <Link to="/" className="flex items-center space-x-2 shrink-0">
               <img src={Logo} alt="Logo" className="h-8 w-auto" />
             </Link>
 
@@ -61,7 +61,7 @@ const Navbar = () => {
             </div>
 
             {/* Right Side */}
-            <div className="flex items-center space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-3 shrink-0">
               {/* Theme Toggle */}
               <button
                 onClick={handleTheme}
@@ -122,7 +122,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       to="/register"
-                      className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-colors shadow-md"
+                      className="px-4 py-2 text-sm font-medium text-white bg-linear-to-r from-pink-500 to-purple-600 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-colors shadow-md"
                     >
                       Register
                     </Link>
@@ -260,7 +260,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/register"
-                className="block w-full text-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg hover:from-pink-600 hover:to-purple-700 shadow-md transition-colors"
+                className="block w-full text-center px-4 py-3 text-sm font-medium text-white bg-linear-to-r from-pink-500 to-purple-600 rounded-lg hover:from-pink-600 hover:to-purple-700 shadow-md transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Register
