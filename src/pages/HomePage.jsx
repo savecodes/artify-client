@@ -2,6 +2,7 @@ import Banner from "../components/Heading/Banner";
 import { useLoaderData } from "react-router";
 import LatestArtworks from "../components/Main/LatestArtworks";
 import TopArtistsOfWeek from "../components/Main/TopArtistsOfWeek";
+import CommunityHighlights from "../components/Main/CommunityHighlights";
 
 const HomePage = () => {
   const latestArtworks = useLoaderData();
@@ -19,12 +20,14 @@ const HomePage = () => {
     .sort((a, b) => b.likes_count - a.likes_count)
     .slice(0, 3);
 
+  const communityHighlights = latestArtworks.slice(0, 6);
 
   return (
     <div>
       <Banner />
       <LatestArtworks latestArtworks={latestArtworks} />
       <TopArtistsOfWeek topArtists={topArtists} />
+      <CommunityHighlights highlights={communityHighlights} />
     </div>
   );
 };
