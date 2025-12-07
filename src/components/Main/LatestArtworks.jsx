@@ -1,7 +1,14 @@
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import LatestArtworksCard from "./LatestArtworksCard";
 import { Link } from "react-router";
+import LoadingSpinner from "../LoadingSpinner";
 
 const LatestArtworks = ({ latestArtworks }) => {
+    const { loading } = useContext(AuthContext);
+    if (loading) {
+      return <LoadingSpinner />;
+    }
   return (
     <div className="w-10/12 mx-auto px-4 py-16">
       {/* Header */}

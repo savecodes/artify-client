@@ -5,10 +5,17 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useRef } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import LoadingSpinner from "../LoadingSpinner";
 
 const CommunityHighlights = ({ highlights }) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+    const { loading } = useContext(AuthContext);
+    if (loading) {
+      return <LoadingSpinner />;
+    }
 
   return (
     <div className="bg-linear-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 pb-15">

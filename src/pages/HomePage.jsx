@@ -3,9 +3,16 @@ import { useLoaderData } from "react-router";
 import LatestArtworks from "../components/Main/LatestArtworks";
 import TopArtistsOfWeek from "../components/Main/TopArtistsOfWeek";
 import CommunityHighlights from "../components/Main/CommunityHighlights";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const HomePage = () => {
   const latestArtworks = useLoaderData();
+  const { loading } = useContext(AuthContext);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   const topArtists = latestArtworks
     .reduce((acc, art) => {

@@ -1,6 +1,13 @@
 import { Link } from "react-router";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
+import LoadingSpinner from "../LoadingSpinner";
 
 const TopArtistsOfWeek = ({ topArtists }) => {
+    const { loading } = useContext(AuthContext);
+    if (loading) {
+      return <LoadingSpinner />;
+    }
   return (
     <div className="bg-linear-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
       <div className="w-10/12 mx-auto px-4 py-16 ">

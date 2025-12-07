@@ -3,6 +3,9 @@ import { Link } from "react-router";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase/Firebase.config";
 import Swal from "sweetalert2";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const handleForgot = (e) => {
   e.preventDefault();
@@ -26,6 +29,10 @@ const handleForgot = (e) => {
 };
 
 const ForgotPassword = () => {
+  const { loading } = useContext(AuthContext);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
   return (
     <div className="w-full flex items-center py-15">
       <div className="w-10/12 mx-auto flex justify-center">

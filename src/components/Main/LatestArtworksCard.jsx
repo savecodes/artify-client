@@ -1,13 +1,20 @@
 import { Heart } from "lucide-react";
+import { useContext } from "react";
 import { Link } from "react-router";
+import { AuthContext } from "../../context/AuthContext";
+import LoadingSpinner from "../LoadingSpinner";
 
 const LatestArtworksCard = ({ art }) => {
+    const { loading } = useContext(AuthContext);
+    if (loading) {
+      return <LoadingSpinner />;
+    }
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group">
       {/* Image */}
       <div className="overflow-hidden h-48">
         <img
-          src={art.artwork_image} // fixed key
+          src={art.artwork_image}
           alt={art.title}
           className="w-full h-full object-cover transform transition duration-500 group-hover:scale-110"
         />

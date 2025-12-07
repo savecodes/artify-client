@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useLoaderData, useNavigate } from "react-router";
 import {
   Heart,
@@ -7,49 +7,72 @@ import {
   Ruler,
   Palette,
   Eye,
-  User,
   Tag,
+  Edit,
+  Trash2,
+  Share2,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-const ArtworksDetails = () => {
+const MyArtworksDetails = () => {
   const data = useLoaderData();
   const artDetails = data.result;
-  const { loading } = useContext(AuthContext);
-  const navigate = useNavigate()
+  const { loading, user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [likesCount, setLikesCount] = useState(artDetails.likes_count || 0);
-  
+  const likesCount = artDetails.likes_count || 0;
+  const [isDeleting, setIsDeleting] = useState(false);
+
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+        <LoadingSpinner />
+    );
   }
 
-  const handlePurchase = () => {
-    toast.info("🛒 Feature coming soon! Stay tuned.", {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+  const handleDelete = () => {
+    // Show confirmation dialog
+    if (
+      window.confirm(
+        "Are you sure you want to delete this artwork? This action cannot be undone."
+      )
+    ) {
+      setIsDeleting(true);
+
+      // Add your DELETE API call here
+      // Example:
+      // fetch(`http://localhost:3000/artworks/${artDetails._id}`, {
+      //   method: 'DELETE',
+      // })
+      // .then(res => res.json())
+      // .then(data => {
+      //   toast.success("🗑️ Artwork deleted successfully!");
+      //   navigate('/my-gallery');
+      // })
+      // .catch(error => {
+      //   toast.error("Failed to delete artwork");
+      //   setIsDeleting(false);
+      // });
+
+      // Temporary simulation
+      setTimeout(() => {
+        toast.success("🗑️ Artwork deleted successfully!", {
+          position: "top-center",
+        });
+        navigate("/my-gallery");
+      }, 1000);
+    }
   };
 
-  const handleAddToFavorite = () => {
-    setIsFavorite(!isFavorite);
-    if (!isFavorite) {
-      setLikesCount((prev) => prev + 1);
-      console.log("Added to favorites:", artDetails);
-    } else {
-      setLikesCount((prev) => prev - 1);
-      console.log("Removed from favorites:", artDetails);
-    }
+  const handleShare = () => {
+    // Copy link to clipboard
+    const link = window.location.href;
+    navigator.clipboard.writeText(link);
+    toast.success("🔗 Link copied to clipboard!", {
+      position: "top-center",
+      autoClose: 3000,
+    });
   };
 
   const formatDate = (dateString) => {
@@ -67,15 +90,15 @@ const ArtworksDetails = () => {
       <div className="w-10/12 mx-auto">
         {/* Back Button */}
         <Link
-          onClick={() => navigate(-1)}
-          className="mb-6 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-400 transition-colors flex items-center space-x-2"
+          to="/my-gallery"
+          className="mb-6 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-400 transition-colors flex items-center space-x-2 w-fit"
         >
           <span>←</span>
-          <span>Back to Gallery</span>
+          <span>Back to My Gallery</span>
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/*  Image */}
+          {/* Left Side - Image */}
           <div className="space-y-6">
             <div className="relative group overflow-hidden rounded-2xl shadow-2xl">
               <img
@@ -84,7 +107,7 @@ const ArtworksDetails = () => {
                 className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
-              {/* Visibility */}
+              {/* Visibility Badge */}
               <div className="absolute top-4 right-4 flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-lg">
                 <Eye size={16} className="text-purple-500" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
@@ -92,7 +115,7 @@ const ArtworksDetails = () => {
                 </span>
               </div>
 
-              {/* Like Count button */}
+              {/* Like Count Badge */}
               <div className="absolute bottom-4 left-4 flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-lg">
                 <Heart
                   size={16}
@@ -109,9 +132,13 @@ const ArtworksDetails = () => {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-4">
                 <img
-                  src={artDetails.user_avatar || "https://i.pravatar.cc/150"}
+                  src={
+                    artDetails.user_avatar ||
+                    user?.photoURL ||
+                    "https://i.pravatar.cc/150"
+                  }
                   alt={artDetails.artist_name}
-                  className="w-16 h-16 rounded-full border-4 border-gradient-to-r from-pink-500 to-purple-600 object-cover"
+                  className="w-16 h-16 rounded-full border-4 border-pink-500 object-cover"
                 />
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -120,6 +147,11 @@ const ArtworksDetails = () => {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                     {artDetails.artist_name}
                   </h3>
+                  {artDetails.artist_email && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {artDetails.artist_email}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -145,6 +177,7 @@ const ArtworksDetails = () => {
 
             {/* Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Medium */}
               <div className="bg-linear-to-br from-pink-100 to-purple-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-pink-200 dark:border-gray-600">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
@@ -215,55 +248,62 @@ const ArtworksDetails = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3 pt-4">
-              {/* Add to Favorite Button */}
-              <button
-                onClick={handleAddToFavorite}
-                className={`w-full py-4 px-6 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 cursor-pointer ${
-                  isFavorite
-                    ? "bg-linear-to-r from-pink-500 to-purple-600 text-white"
-                    : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-pink-500 dark:border-pink-400 hover:bg-pink-50 dark:hover:bg-gray-600"
-                }`}
+              {/* Edit Button */}
+              <Link
+
+              to={`/my-gallery/edit/${artDetails._id}`}
+                disabled={isDeleting}
+                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                <Heart size={24} className={isFavorite ? "fill-current" : ""} />
-                <span>
-                  {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-                </span>
+                <Edit size={24} />
+                <span>Edit Artwork</span>
+              </Link>
+
+              {/* Delete Button */}
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-red-500 to-pink-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-red-600 hover:to-pink-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                <Trash2 size={24} />
+                <span>{isDeleting ? "Deleting..." : "Delete Artwork"}</span>
               </button>
 
-              {/* Purchase Button */}
+              {/* Share Button */}
               <button
-                onClick={() => handlePurchase()}
-                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-green-500 to-emerald-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 cursor-pointer"
+                onClick={handleShare}
+                disabled={isDeleting}
+                className="w-full py-4 px-6 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-purple-500 dark:border-purple-400 font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-purple-50 dark:hover:bg-gray-600 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                <DollarSign size={24} />
-                <span>Purchase Artwork</span>
+                <Share2 size={24} />
+                <span>Share Artwork</span>
               </button>
             </div>
 
-            {/* Additional Info */}
+            {/* Management Info */}
             <div className="bg-linear-to-r from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-pink-200 dark:border-gray-600">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
                 <span className="text-pink-500">ℹ️</span>
-                <span>Artwork Information</span>
+                <span>Artwork Management</span>
               </h3>
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li className="flex items-start space-x-2">
                   <span className="text-pink-500 mt-0.5">•</span>
                   <span>
-                    This artwork is available for purchase and can be shipped
-                    worldwide
+                    You can edit your artwork details at any time to update
+                    information
                   </span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-purple-500 mt-0.5">•</span>
                   <span>
-                    All artworks come with a certificate of authenticity
+                    Deleting an artwork is permanent and cannot be undone
                   </span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-blue-500 mt-0.5">•</span>
                   <span>
-                    Contact the artist directly for custom commissions
+                    Share your artwork with others using the share button
                   </span>
                 </li>
               </ul>
@@ -275,4 +315,4 @@ const ArtworksDetails = () => {
   );
 };
 
-export default ArtworksDetails;
+export default MyArtworksDetails;

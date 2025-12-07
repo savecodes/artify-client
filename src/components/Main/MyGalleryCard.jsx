@@ -1,13 +1,6 @@
 import { Heart } from "lucide-react";
-import { useContext } from "react";
 import { Link } from "react-router";
-import { AuthContext } from "../../context/AuthContext";
-
-const AllArtworksCard = ({ art }) => {
-  const { loading } = useContext(AuthContext);
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+const MyGalleryCard = ({ art }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group">
       {/* Artwork Image */}
@@ -55,7 +48,7 @@ const AllArtworksCard = ({ art }) => {
         </p>
 
         <Link
-          to={`/artwork/${art._id}`}
+          to={`/my-gallery/${art._id}`}
           className="block mt-4 w-full text-center py-2 
           bg-brand-50 dark:bg-brand-900 
           text-brand-700 dark:text-brand-300 
@@ -70,4 +63,4 @@ const AllArtworksCard = ({ art }) => {
   );
 };
 
-export default AllArtworksCard;
+export default MyGalleryCard;

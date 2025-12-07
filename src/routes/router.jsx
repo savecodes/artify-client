@@ -11,6 +11,8 @@ import ForgotPassword from "../pages/ForgotPassword";
 import Profile from "../pages/Profile";
 import PrivateRoute from "../context/PrivateRoute";
 import ArtworksDetails from "../pages/ArtworksDetails";
+import MyArtworksDetails from "../pages/MyArtworksDetails";
+import UpdateMyArtworks from "../pages/UpdateMyArtworks";
 
 const router = createBrowserRouter([
   {
@@ -47,7 +49,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/my-gallery",
-        element: <MyGallery />,
+        element: (
+          <PrivateRoute>
+            <MyGallery />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/my-gallery/:id",
+        element: (
+          <PrivateRoute>
+            <MyArtworksDetails />
+          </PrivateRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/my-gallery/${params.id}`),
+      },
+      {
+        path: "/my-gallery/edit/:id",
+        element: (
+          <PrivateRoute>
+            <UpdateMyArtworks />
+          </PrivateRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/my-gallery/${params.id}`),
       },
       {
         path: "/favorites",

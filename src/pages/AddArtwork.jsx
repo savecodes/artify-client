@@ -12,10 +12,14 @@ import {
   Upload,
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const AddArtwork = () => {
-  const { user } = useContext(AuthContext);
-  console.log(user);
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   const categories = [
     "Digital Art",
@@ -31,6 +35,7 @@ const AddArtwork = () => {
       artwork_image: e.target.image_url.value,
       title: e.target.title.value,
       artist_name: user.displayName,
+      artist_email: user.email,
       category: e.target.category.value,
       user_avatar: user.photoURL,
       medium_tools: e.target.medium_tools.value,
