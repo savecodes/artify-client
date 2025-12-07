@@ -5,10 +5,10 @@ const AllArtworksCard = ({ art }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden group">
       
-      {/* Image */}
+      {/* Artwork Image */}
       <div className="overflow-hidden h-48">
         <img
-          src={art.image}
+          src={art.artwork_image}
           alt={art.title}
           className="w-full h-full object-cover transform transition duration-500 group-hover:scale-110"
         />
@@ -16,12 +16,23 @@ const AllArtworksCard = ({ art }) => {
 
       {/* Content */}
       <div className="p-4">
+        <div className="flex items-center mb-2">
+          <img
+            src={art.user_avatar}
+            alt={art.artist_name}
+            className="w-6 h-6 rounded-full mr-2"
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            {art.artist_name}
+          </p>
+        </div>
+
         <h3 className="font-semibold text-gray-900 dark:text-white truncate">
           {art.title}
         </h3>
 
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          by {art.artist_name}
+          {art.medium_tools} • {art.dimensions}
         </p>
 
         <div className="flex items-center justify-between mt-2">
@@ -33,6 +44,10 @@ const AllArtworksCard = ({ art }) => {
             <Heart size={12} className="mr-1 fill-red-500" /> {art.likes_count}
           </span>
         </div>
+
+        <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 truncate">
+          ${art.price}
+        </p>
 
         <Link
           to={`/artwork/${art._id}`}

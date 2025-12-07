@@ -16,21 +16,23 @@ import { AuthContext } from "../context/AuthContext";
 const AddArtwork = () => {
   const { user } = useContext(AuthContext);
   console.log(user);
+
   const categories = [
-    "Landscape",
-    "Abstract",
-    "Urban",
-    "Nature",
+    "Digital Art",
+    "Painting",
+    "Concept Art",
+    "Illustration",
     "Photography",
   ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = {
-      image: e.target.image.value,
+      artwork_image: e.target.image_url.value,
       title: e.target.title.value,
       artist_name: user.displayName,
       category: e.target.category.value,
+      user_avatar: user.photoURL,
       medium_tools: e.target.medium_tools.value,
       description: e.target.description.value,
       dimensions: e.target.dimensions.value,
@@ -40,12 +42,13 @@ const AddArtwork = () => {
       create_date: new Date(),
     };
     console.log(formData);
+
     fetch("http://localhost:3000/add-artworks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     })
-      .then((res) => res.json)
+      .then((res) => res.json())
       .then((data) => {
         console.log(data);
       })
@@ -62,11 +65,9 @@ const AddArtwork = () => {
           <div className="inline-flex items-center justify-center w-14 h-14 bg-linear-to-br from-pink-500 to-purple-600 rounded-full mb-3">
             <Palette size={28} className="text-white" />
           </div>
-
           <h1 className="text-3xl font-extrabold bg-linear-to-br from-pink-500 via-purple-600 to-blue-600 bg-clip-text text-transparent">
             Share Your Masterpiece
           </h1>
-
           <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
             Add your artwork to inspire the community
           </p>
@@ -82,12 +83,10 @@ const AddArtwork = () => {
             </label>
             <input
               type="url"
-              name="image"
+              name="image_url"
               placeholder="https://your-image-url.jpg"
               required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 
-              text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 
-              focus:ring-pink-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
             />
           </div>
 
@@ -102,9 +101,7 @@ const AddArtwork = () => {
               name="title"
               placeholder="Artwork title"
               required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 
-              text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 
-              focus:ring-purple-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
             />
           </div>
 
@@ -121,8 +118,7 @@ const AddArtwork = () => {
               defaultValue={user.displayName}
               placeholder="Your name"
               required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 
-              text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -136,8 +132,7 @@ const AddArtwork = () => {
               <select
                 name="category"
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -157,8 +152,7 @@ const AddArtwork = () => {
                 name="medium_tools"
                 placeholder="e.g. Oil on Canvas"
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
@@ -174,8 +168,7 @@ const AddArtwork = () => {
               rows="3"
               placeholder="Describe your artwork..."
               required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-              bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-blue-500"
             ></textarea>
           </div>
 
@@ -189,10 +182,9 @@ const AddArtwork = () => {
               <input
                 type="text"
                 name="dimensions"
-                placeholder="24x36 in"
+                placeholder="24x36 in or px"
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500"
               />
             </div>
 
@@ -207,8 +199,7 @@ const AddArtwork = () => {
                 placeholder="350"
                 min="0"
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500"
               />
             </div>
 
@@ -220,8 +211,7 @@ const AddArtwork = () => {
               <select
                 name="visibility"
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
               >
                 <option value="public">Public</option>
                 <option value="private">Private</option>
@@ -232,9 +222,7 @@ const AddArtwork = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 mt-2 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 
-            text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-pink-600 hover:via-purple-700 
-            hover:to-blue-700 transition-all cursor-pointer"
+            className="w-full py-3.5 mt-2 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-pink-600 hover:via-purple-700 hover:to-blue-700 transition-all cursor-pointer"
           >
             <div className="flex items-center justify-center space-x-2">
               <Upload size={20} />

@@ -10,6 +10,7 @@ import SignUp from "../pages/SignUp";
 import ForgotPassword from "../pages/ForgotPassword";
 import Profile from "../pages/Profile";
 import PrivateRoute from "../context/PrivateRoute";
+import ArtworksDetails from "../pages/ArtworksDetails";
 
 const router = createBrowserRouter([
   {
@@ -19,12 +20,22 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage />,
-        loader: () => fetch('http://localhost:3000/latest-artworks'),
+        loader: () => fetch("http://localhost:3000/latest-artworks"),
       },
       {
         path: "/explore",
         element: <ExploreAll />,
-        loader: () => fetch('http://localhost:3000/all-artworks'),
+        loader: () => fetch("http://localhost:3000/all-artworks"),
+      },
+      {
+        path: "/artwork/:id",
+        element: (
+          <PrivateRoute>
+            <ArtworksDetails />
+          </PrivateRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/artwork/${params.id}`),
       },
       {
         path: "/add-artwork",

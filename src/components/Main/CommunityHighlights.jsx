@@ -33,6 +33,7 @@ const CommunityHighlights = ({ highlights }) => {
           </Link>
         </div>
 
+        {/* Navigation Buttons */}
         <button
           ref={prevRef}
           className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-700 shadow-md 
@@ -54,6 +55,7 @@ const CommunityHighlights = ({ highlights }) => {
           />
         </button>
 
+        {/* Swiper */}
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={20}
@@ -78,7 +80,7 @@ const CommunityHighlights = ({ highlights }) => {
             <SwiperSlide key={art._id}>
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
                 <img
-                  src={art.image_url}
+                  src={art.artwork_image}
                   alt={art.title}
                   className="w-full h-48 object-cover transform hover:scale-105 transition duration-500"
                 />

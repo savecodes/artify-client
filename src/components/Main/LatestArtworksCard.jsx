@@ -7,7 +7,7 @@ const LatestArtworksCard = ({ art }) => {
       {/* Image */}
       <div className="overflow-hidden h-48">
         <img
-          src={art.image}
+          src={art.artwork_image} // fixed key
           alt={art.title}
           className="w-full h-full object-cover transform transition duration-500 group-hover:scale-110"
         />

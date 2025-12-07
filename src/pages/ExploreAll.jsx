@@ -18,10 +18,10 @@ const ExploreAll = () => {
 
   const categories = [
     "All",
-    "Landscape",
-    "Abstract",
-    "Urban",
-    "Nature",
+    "Digital Art",
+    "Painting",
+    "Concept Art",
+    "Illustration",
     "Photography",
   ];
 
