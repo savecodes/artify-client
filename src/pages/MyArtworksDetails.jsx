@@ -15,6 +15,7 @@ import {
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Swal from "sweetalert2";
 
 const MyArtworksDetails = () => {
   const data = useLoaderData();
@@ -26,43 +27,51 @@ const MyArtworksDetails = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   if (loading) {
-    return (
-        <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   const handleDelete = () => {
-    // Show confirmation dialog
-    if (
-      window.confirm(
-        "Are you sure you want to delete this artwork? This action cannot be undone."
-      )
-    ) {
-      setIsDeleting(true);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setIsDeleting(true);
 
-      // Add your DELETE API call here
-      // Example:
-      // fetch(`http://localhost:3000/artworks/${artDetails._id}`, {
-      //   method: 'DELETE',
-      // })
-      // .then(res => res.json())
-      // .then(data => {
-      //   toast.success("🗑️ Artwork deleted successfully!");
-      //   navigate('/my-gallery');
-      // })
-      // .catch(error => {
-      //   toast.error("Failed to delete artwork");
-      //   setIsDeleting(false);
-      // });
+        fetch(`http://localhost:3000/my-gallery/${artDetails._id}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
 
-      // Temporary simulation
-      setTimeout(() => {
-        toast.success("🗑️ Artwork deleted successfully!", {
-          position: "top-center",
-        });
-        navigate("/my-gallery");
-      }, 1000);
-    }
+            Swal.fire({
+              title: "Deleted!",
+              text: "Artwork deleted successfully!",
+              icon: "success",
+              position: "center",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+
+            navigate("/my-gallery");
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: "Error!",
+              text: error.message,
+              icon: "error",
+              position: "center",
+            });
+            setIsDeleting(false);
+          });
+      }
+    });
   };
 
   const handleShare = () => {
@@ -250,8 +259,7 @@ const MyArtworksDetails = () => {
             <div className="space-y-3 pt-4">
               {/* Edit Button */}
               <Link
-
-              to={`/my-gallery/edit/${artDetails._id}`}
+                to={`/my-gallery/edit/${artDetails._id}`}
                 disabled={isDeleting}
                 className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >

@@ -13,9 +13,12 @@ import {
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 const AddArtwork = () => {
   const { user, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   if (loading) {
     return <LoadingSpinner />;
@@ -56,9 +59,15 @@ const AddArtwork = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
+        toast.success("🎨 Artwork added successfully!", {
+          position: "top-center",
+        });
+        navigate("/explore");
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error(error.message, {
+          position: "top-center",
+        });
       });
   };
 

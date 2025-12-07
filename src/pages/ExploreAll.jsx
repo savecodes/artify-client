@@ -69,10 +69,10 @@ const ExploreAll = () => {
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition font-medium
+              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition font-medium cursor-pointer
           ${
             category === c
-              ? "bg-linear-to-r from-pink-500 to-purple-600 text-white shadow-lg"
+              ? "bg-linear-to-r from-pink-500 to-purple-600 text-white"
               : "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:bg-gray-300 dark:hover:bg-gray-700"
           }
         `}

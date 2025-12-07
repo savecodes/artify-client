@@ -13,8 +13,8 @@ import {
   Save,
   ArrowLeft,
 } from "lucide-react";
-import { toast } from "react-toastify";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Swal from "sweetalert2";
 
 const UpdateMyArtworks = () => {
   const { loading } = useContext(AuthContext);
@@ -23,11 +23,7 @@ const UpdateMyArtworks = () => {
   const navigate = useNavigate();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-linear-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const categories = [
@@ -40,7 +36,7 @@ const UpdateMyArtworks = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const formData = {
       artwork_image: e.target.image_url.value,
       title: e.target.title.value,
@@ -52,27 +48,44 @@ const UpdateMyArtworks = () => {
       visibility: e.target.visibility.value,
     };
 
-    fetch(`http://localhost:3000/my-gallery/edit/${artDetails._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data.success) {
-          toast.success("Artwork updated successfully!", {
-            position: "top-center",
+    // Confirmation before submitting
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Save changes
+        fetch(`http://localhost:3000/my-gallery/edit/${artDetails._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.success) {
+              Swal.fire(
+                "Saved!",
+                "Artwork updated successfully!",
+                "success"
+              ).then(() => {
+                navigate(`/my-gallery/${artDetails._id}`);
+              });
+            } else {
+              Swal.fire("Failed!", "Failed to update artwork.", "error");
+            }
+          })
+          .catch((error) => {
+            console.log(error.message);
+            Swal.fire("Error!", "Something went wrong!", "error");
           });
-          navigate(`/my-gallery/${artDetails._id}`);
-        } else {
-          toast.error("Failed to update artwork");
-        }
-      })
-      .catch((error) => {
-        console.log(error.message);
-        toast.error("Something went wrong!");
-      });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
   };
 
   return (
@@ -241,7 +254,7 @@ const UpdateMyArtworks = () => {
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full py-4 px-6 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-pink-600 hover:via-purple-700 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2"
+                className="w-full py-4 px-6 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-pink-600 hover:via-purple-700 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
               >
                 <Save size={20} />
                 <span>Save Changes</span>
@@ -252,7 +265,8 @@ const UpdateMyArtworks = () => {
           {/* Info */}
           <div className="mt-6 bg-linear-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-pink-200 dark:border-gray-600">
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-              💡 <span className="font-semibold">Note:</span> Original creation date, likes, and artist info will be preserved
+              💡 <span className="font-semibold">Note:</span> Original creation
+              date, likes, and artist info will be preserved
             </p>
           </div>
         </div>
