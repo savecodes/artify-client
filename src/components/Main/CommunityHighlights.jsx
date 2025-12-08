@@ -105,7 +105,7 @@ const CommunityHighlights = ({ highlights }) => {
                     </span>
                     <Link
                       to={`/artwork/${art._id}`}
-                      className="text-brand-600 dark:text-brand-300 hover:underline"
+                      className="text-brand-600 dark:text-brand-300 hover:underline cursor-pointer"
                     >
                       View Details
                     </Link>

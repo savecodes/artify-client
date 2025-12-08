@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLoaderData, useNavigate } from "react-router";
 import {
   Heart,
@@ -18,13 +18,47 @@ import LoadingSpinner from "../components/LoadingSpinner";
 const ArtworksDetails = () => {
   const data = useLoaderData();
   const artDetails = data.result;
-  const { loading } = useContext(AuthContext);
-  const navigate = useNavigate()
+  const { user, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [likesCount, setLikesCount] = useState(artDetails.likes_count || 0);
-  
-  if (loading) {
+  const [isCheckingFavorite, setIsCheckingFavorite] = useState(true);
+
+  // Check if artwork is already in favorites when component loads
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkFavoriteStatus = async () => {
+      if (!user?.email || !artDetails._id) {
+        if (isMounted) setIsCheckingFavorite(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `http://localhost:3000/favorites/check?email=${user.email}&artwork_id=${artDetails._id}`
+        );
+        const data = await response.json();
+        
+        if (isMounted && data.success) {
+          setIsFavorite(data.isFavorite);
+        }
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      } finally {
+        if (isMounted) setIsCheckingFavorite(false);
+      }
+    };
+
+    checkFavoriteStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.email, artDetails._id]);
+
+  if (loading || isCheckingFavorite) {
     return <LoadingSpinner />;
   }
 
@@ -42,13 +76,77 @@ const ArtworksDetails = () => {
   };
 
   const handleAddToFavorite = () => {
-    setIsFavorite(!isFavorite);
-    if (!isFavorite) {
-      setLikesCount((prev) => prev + 1);
-      console.log("Added to favorites:", artDetails);
+    if (!user?.email) {
+      toast.error("Please login to add favorites!");
+      return;
+    }
+
+    const newState = !isFavorite;
+    const previousState = isFavorite;
+    const previousCount = likesCount;
+
+    // Optimistic update
+    setIsFavorite(newState);
+    setLikesCount((prev) => (newState ? prev + 1 : prev - 1));
+
+    const payload = {
+      artwork_id: artDetails._id,
+      likes_by: user.email,
+    };
+
+    if (newState) {
+      // ADD Favorite
+      fetch("http://localhost:3000/favorites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.success) {
+            // Revert on failure
+            setIsFavorite(previousState);
+            setLikesCount(previousCount);
+            if (data.message === "Already in favorites") {
+              toast.info("Already in favorites!");
+            } else {
+              toast.error("Failed to add to favorites");
+            }
+          } else {
+            toast.success("Added to favorites ❤");
+          }
+        })
+        .catch((error) => {
+          // Revert on error
+          setIsFavorite(previousState);
+          setLikesCount(previousCount);
+          toast.error("Something went wrong!");
+          console.error(error);
+        });
     } else {
-      setLikesCount((prev) => prev - 1);
-      console.log("Removed from favorites:", artDetails);
+      // REMOVE Favorite
+      fetch(
+        `http://localhost:3000/favorites?email=${user.email}&artwork_id=${artDetails._id}`,
+        { method: "DELETE" }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.success) {
+            // Revert on failure
+            setIsFavorite(previousState);
+            setLikesCount(previousCount);
+            toast.error("Failed to remove from favorites");
+          } else {
+            toast.success("Removed from favorites 💔");
+          }
+        })
+        .catch((error) => {
+          // Revert on error
+          setIsFavorite(previousState);
+          setLikesCount(previousCount);
+          toast.error("Something went wrong!");
+          console.error(error);
+        });
     }
   };
 

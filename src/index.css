@@ -18,3 +18,13 @@
 .swiper-pagination-bullet-active {
   background: #ec4899 !important;
 }
+
+
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+

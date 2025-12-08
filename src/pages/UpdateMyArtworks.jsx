@@ -57,7 +57,6 @@ const UpdateMyArtworks = () => {
       denyButtonText: `Don't save`,
     }).then((result) => {
       if (result.isConfirmed) {
-        // Save changes
         fetch(`http://localhost:3000/my-gallery/edit/${artDetails._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
