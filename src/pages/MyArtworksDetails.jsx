@@ -32,11 +32,14 @@ const MyArtworksDetails = () => {
   useEffect(() => {
     const loadArtwork = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/my-gallery/${id}`, {
-          headers: {
-            authorization: `bearer ${user.accessToken}`,
-          },
-        });
+        const res = await fetch(
+          `https://artify-server-eight.vercel.app/my-gallery/${id}`,
+          {
+            headers: {
+              authorization: `bearer ${user.accessToken}`,
+            },
+          }
+        );
         const data = await res.json();
         setArtDetails(data.result);
       } catch (error) {
@@ -69,10 +72,13 @@ const MyArtworksDetails = () => {
       if (result.isConfirmed) {
         setIsDeleting(true);
 
-        fetch(`http://localhost:3000/my-gallery/${artDetails._id}`, {
-          headers: { authorization: `bearer ${user.accessToken}` },
-          method: "DELETE",
-        })
+        fetch(
+          `https://artify-server-eight.vercel.app/my-gallery/${artDetails._id}`,
+          {
+            headers: { authorization: `bearer ${user.accessToken}` },
+            method: "DELETE",
+          }
+        )
           .then((res) => res.json())
           .then(() => {
             Swal.fire({

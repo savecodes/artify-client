@@ -28,12 +28,14 @@ const router = createBrowserRouter([
             <HomePage />
           </Suspense>
         ),
-        loader: () => fetch("http://localhost:3000/latest-artworks"),
+        loader: () =>
+          fetch("https://artify-server-eight.vercel.app/latest-artworks"),
       },
       {
         path: "/explore",
         element: <ExploreAll />,
-        loader: () => fetch("http://localhost:3000/all-artworks"),
+        loader: () =>
+          fetch("https://artify-server-eight.vercel.app/all-artworks"),
       },
       {
         path: "/artwork/:id",

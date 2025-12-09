@@ -1,21 +1,130 @@
-<<<<<<< HEAD
-# React + Vite
+# 🎨 ARTIFY - Creative Artwork Showcase Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Live Site:** [https://artify-artwork.netlify.app/](https://artify-artwork.netlify.app/)
 
-Currently, two official plugins are available:
+ARTIFY is an online art-sharing platform where artists can upload their artworks, explore other artists' creations, and connect through likes and favorites.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Browse Artworks** - Explore beautiful artworks from talented artists
+- **Like & Favorite System** - Like artworks and save your favorites
+- **Upload Your Art** - Share your creative work with the community
+- **Personal Gallery** - Manage all your uploaded artworks in one place
+- **Dark/Light Mode** - Switch between themes for comfortable viewing
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# artify-client
-A modern MERN project where artists can upload, explore, like, and manage artworks. Includes authentication, favorites, category filtering, artist profiles, and a fully responsive dark/light themed UI.
->>>>>>> c29f1c829ab097a31db4b22a0efaa240f466e3bb
+## 🛠️ Technologies Used
+
+- **React** - Frontend library
+- **Firebase** - Authentication
+- **MongoDB** - Database
+- **Tailwind CSS** - Styling
+- **Express.js** - Backend server
+
+---
+
+## 📚 Main Packages
+
+- `react` - UI building
+- `firebase` - User authentication
+- `react-router-dom` - Page navigation
+- `axios` - API calls
+- `react-toastify` - Notifications
+- `sweetalert2` - Alert messages
+- `react-image-gallery` - Banner slider
+- `react-simple-typewriter` - Text animation
+- `swiper` - Community highlights carousel
+- `lucide-react` - Icons
+
+---
+
+## 🚀 How to Run
+
+1. **Clone the project**
+   ```bash
+   git clone <repository-url>
+   cd artify-client
+   ```
+
+2. **Install packages**
+   ```bash
+   npm install
+   ```
+
+3. **Add Environment Variables**
+   
+   Create `.env.local` file:
+   ```
+   VITE_APIKEY=your_firebase_api_key
+   VITE_AUTHDOMAIN=your_firebase_auth_domain
+   VITE_PROJECTID=your_project_id
+   VITE_STORAGEBUCKET=your_storage_bucket
+   VITE_MESSAGINGSENDERID=your_sender_id
+   VITE_APPID=your_app_id
+   VITE_API_URL=your_backend_url
+   ```
+
+4. **Run the project**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 📄 Pages
+
+- **Home** - Banner, Featured artworks, Top artists, Community highlights
+- **Explore** - All public artworks with search and filter
+- **Add Artwork** - Upload new artwork (Private)
+- **My Gallery** - Your uploaded artworks with edit/delete (Private)
+- **My Favorites** - Your favorite artworks (Private)
+- **Login/Register** - User authentication
+
+---
+
+## 🔐 Authentication
+
+- Email & Password login/registration
+- Google login
+- Password validation (uppercase, lowercase, minimum 6 characters)
+- Private routes protection
+
+---
+
+## 🎨 Special Features
+
+- Responsive design for mobile, tablet, desktop
+- Theme toggle (dark/light mode)
+- Real-time like count updates
+- Search artworks by title or artist
+- Filter by category
+- Toast notifications for all actions
+- Loading spinners
+
+---
+
+## 📦 Project Structure
+
+```
+src/
+├── components/     # Reusable components
+├── pages/          # All pages
+├── context/        # Auth context
+├── routes/         # Router setup
+├── firebase/       # Firebase config
+└── assets/         # Images
+```
+
+---
+
+## 🌐 Deployment
+
+- **Client:** Netlify or Firebase Hosting
+- **Server:** Vercel
+
+---
+
+Made with ❤️ for Programming Hero Assignment

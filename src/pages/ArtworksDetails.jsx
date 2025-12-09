@@ -31,11 +31,14 @@ const ArtworksDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/artwork/${id}`, {
-          headers: {
-            authorization: `bearer ${user.accessToken}`,
-          },
-        });
+        const res = await fetch(
+          `https://artify-server-eight.vercel.app/artwork/${id}`,
+          {
+            headers: {
+              authorization: `bearer ${user.accessToken}`,
+            },
+          }
+        );
         const data = await res.json();
         setArtDetails(data.result);
         setLikesCount(data.result.likes_count || 0);
@@ -61,7 +64,7 @@ const ArtworksDetails = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/favorites/check?email=${user.email}&artwork_id=${artDetails._id}`,
+          `https://artify-server-eight.vercel.app/favorites/check?email=${user.email}&artwork_id=${artDetails._id}`,
           {
             headers: {
               authorization: `bearer ${user.accessToken}`,
@@ -124,7 +127,7 @@ const ArtworksDetails = () => {
     };
 
     if (newState) {
-      fetch("http://localhost:3000/favorites", {
+      fetch("https://artify-server-eight.vercel.app/favorites", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +158,7 @@ const ArtworksDetails = () => {
         });
     } else {
       fetch(
-        `http://localhost:3000/favorites?email=${user.email}&artwork_id=${artDetails._id}`,
+        `https://artify-server-eight.vercel.app/favorites?email=${user.email}&artwork_id=${artDetails._id}`,
         {
           method: "DELETE",
           headers: {

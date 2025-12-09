@@ -11,11 +11,14 @@ const MyGallery = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(`http://localhost:3000/my-gallery?email=${user.email}`, {
-      headers: {
-        authorization: `bearer ${user.accessToken}`,
-      },
-    })
+    fetch(
+      `https://artify-server-eight.vercel.app/my-gallery?email=${user.email}`,
+      {
+        headers: {
+          authorization: `bearer ${user.accessToken}`,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setGallery(data.result);

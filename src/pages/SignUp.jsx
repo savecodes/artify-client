@@ -259,7 +259,7 @@ const SignUp = () => {
               rounded-full text-white font-medium 
               bg-linear-to-r from-[#E94B8B] to-[#7C3AED] 
               hover:opacity-90 active:scale-95 
-              transition-all duration-200
+              transition-all duration-200 cursor-pointer
             "
             >
               Create Account

@@ -11,9 +11,12 @@ const Favorites = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(`http://localhost:3000/my-favorites?email=${user.email}`, {
-      headers: { authorization: `bearer ${user.accessToken}` },
-    })
+    fetch(
+      `https://artify-server-eight.vercel.app/my-favorites?email=${user.email}`,
+      {
+        headers: { authorization: `bearer ${user.accessToken}` },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setGallery(data.result);

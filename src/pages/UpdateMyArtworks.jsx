@@ -27,9 +27,12 @@ const UpdateMyArtworks = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/my-gallery/${id}`, {
-          headers: { authorization: `bearer ${user.accessToken}` },
-        });
+        const res = await fetch(
+          `https://artify-server-eight.vercel.app/my-gallery/${id}`,
+          {
+            headers: { authorization: `bearer ${user.accessToken}` },
+          }
+        );
         const data = await res.json();
         setArtDetails(data.result);
       } catch (err) {
@@ -77,14 +80,17 @@ const UpdateMyArtworks = () => {
       denyButtonText: `Don't save`,
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:3000/my-gallery/edit/${artDetails._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `bearer ${user.accessToken}`,
-          },
-          body: JSON.stringify(formData),
-        })
+        fetch(
+          `https://artify-server-eight.vercel.app/my-gallery/edit/${artDetails._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `bearer ${user.accessToken}`,
+            },
+            body: JSON.stringify(formData),
+          }
+        )
           .then((res) => res.json())
           .then((data) => {
             if (data.success) {
