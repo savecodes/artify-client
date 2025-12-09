@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   Palette,
@@ -20,6 +20,9 @@ const AddArtwork = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const [artworkData, setArtworkData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -34,6 +37,8 @@ const AddArtwork = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const formData = {
       artwork_image: e.target.image_url.value,
       title: e.target.title.value,
@@ -49,25 +54,27 @@ const AddArtwork = () => {
       likes_count: 0,
       create_date: new Date(),
     };
-    console.log(formData);
 
     fetch("http://localhost:3000/add-artworks", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `bearer ${user.accessToken}`,
+      },
       body: JSON.stringify(formData),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        setArtworkData(data); // Save fetch data to state
         toast.success("🎨 Artwork added successfully!", {
           position: "top-center",
         });
+        setIsSubmitting(false);
         navigate("/explore");
       })
       .catch((error) => {
-        toast.error(error.message, {
-          position: "top-center",
-        });
+        toast.error(error.message, { position: "top-center" });
+        setIsSubmitting(false);
       });
   };
 
@@ -236,14 +243,34 @@ const AddArtwork = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 mt-2 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-pink-600 hover:via-purple-700 hover:to-blue-700 transition-all cursor-pointer"
+            disabled={isSubmitting}
+            className={`w-full py-3.5 mt-2 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all cursor-pointer ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
             <div className="flex items-center justify-center space-x-2">
               <Upload size={20} />
-              <span>Add Artwork</span>
+              <span>{isSubmitting ? "Adding..." : "Add Artwork"}</span>
             </div>
           </button>
         </form>
+
+        {/* Optional: show artwork preview after adding */}
+        {artworkData && (
+          <div className="mt-6 border-t pt-4">
+            <h2 className="text-lg font-bold text-gray-700 dark:text-gray-200">
+              Your Added Artwork:
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              {artworkData.title}
+            </p>
+            <img
+              src={artworkData.artwork_image}
+              alt={artworkData.title}
+              className="mt-2 rounded-lg max-h-60 object-cover"
+            />
+          </div>
+        )}
 
         <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-4">
           By submitting, you allow your artwork to appear in the public gallery.

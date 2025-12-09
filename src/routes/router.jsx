@@ -13,6 +13,8 @@ import PrivateRoute from "../context/PrivateRoute";
 import ArtworksDetails from "../pages/ArtworksDetails";
 import MyArtworksDetails from "../pages/MyArtworksDetails";
 import UpdateMyArtworks from "../pages/UpdateMyArtworks";
+import { Suspense } from "react";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +23,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <HomePage />,
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <HomePage />
+          </Suspense>
+        ),
         loader: () => fetch("http://localhost:3000/latest-artworks"),
       },
       {
@@ -36,8 +42,6 @@ const router = createBrowserRouter([
             <ArtworksDetails />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`http://localhost:3000/artwork/${params.id}`),
       },
       {
         path: "/add-artwork",
@@ -62,8 +66,6 @@ const router = createBrowserRouter([
             <MyArtworksDetails />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`http://localhost:3000/my-gallery/${params.id}`),
       },
       {
         path: "/my-gallery/edit/:id",
@@ -72,12 +74,14 @@ const router = createBrowserRouter([
             <UpdateMyArtworks />
           </PrivateRoute>
         ),
-        loader: ({ params }) =>
-          fetch(`http://localhost:3000/my-gallery/${params.id}`),
       },
       {
         path: "/favorites",
-        element: <Favorites />,
+        element: (
+          <PrivateRoute>
+            <Favorites />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/settings",

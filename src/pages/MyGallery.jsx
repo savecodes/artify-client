@@ -11,19 +11,20 @@ const MyGallery = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(`http://localhost:3000/my-gallery?email=${user.email}`)
+    fetch(`http://localhost:3000/my-gallery?email=${user.email}`, {
+      headers: {
+        authorization: `bearer ${user.accessToken}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setGallery(data.result);
         setLoading(false);
       });
-  }, [user?.email]);
+  }, [user?.email, user?.accessToken]);
 
   if (loading) {
-    return (
-        <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -40,13 +41,14 @@ const MyGallery = () => {
           <p className="text-gray-600 dark:text-gray-400 text-lg">
             Your personal collection of artworks
           </p>
-          
+
           {/* Stats Bar */}
           {gallery.length > 0 && (
             <div className="mt-6 inline-flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg border border-gray-200 dark:border-gray-700">
               <Sparkles size={20} className="text-purple-500" />
               <span className="text-gray-700 dark:text-gray-300 font-medium">
-                {gallery.length} {gallery.length === 1 ? 'Artwork' : 'Artworks'} Created
+                {gallery.length} {gallery.length === 1 ? "Artwork" : "Artworks"}{" "}
+                Created
               </span>
             </div>
           )}
@@ -64,7 +66,8 @@ const MyGallery = () => {
                   No Artworks Yet
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                  Your gallery is empty. Start creating and sharing your amazing artworks with the world!
+                  Your gallery is empty. Start creating and sharing your amazing
+                  artworks with the world!
                 </p>
                 <a
                   href="/add-artwork"
@@ -85,7 +88,9 @@ const MyGallery = () => {
           <div className="mt-12 text-center">
             <div className="bg-linear-to-r from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-pink-200 dark:border-gray-600 max-w-2xl mx-auto">
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                💡 <span className="font-semibold">Tip:</span> Keep creating and sharing your artworks to build your portfolio and gain recognition in the community!
+                💡 <span className="font-semibold">Tip:</span> Keep creating and
+                sharing your artworks to build your portfolio and gain
+                recognition in the community!
               </p>
             </div>
           </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import {
   Heart,
   Calendar,
@@ -16,31 +16,60 @@ import { AuthContext } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const ArtworksDetails = () => {
-  const data = useLoaderData();
-  const artDetails = data.result;
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [artDetails, setArtDetails] = useState(null);
 
   const [isFavorite, setIsFavorite] = useState(false);
-  const [likesCount, setLikesCount] = useState(artDetails.likes_count || 0);
+  const [likesCount, setLikesCount] = useState(0); // FIXED
   const [isCheckingFavorite, setIsCheckingFavorite] = useState(true);
+
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/artwork/${id}`, {
+          headers: {
+            authorization: `bearer ${user.accessToken}`,
+          },
+        });
+        const data = await res.json();
+        setArtDetails(data.result);
+        setLikesCount(data.result.likes_count || 0);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, [id, user?.accessToken]);
 
   // Check if artwork is already in favorites when component loads
   useEffect(() => {
     let isMounted = true;
 
     const checkFavoriteStatus = async () => {
-      if (!user?.email || !artDetails._id) {
+      if (!user?.email || !artDetails?._id) {
         if (isMounted) setIsCheckingFavorite(false);
         return;
       }
 
       try {
         const response = await fetch(
-          `http://localhost:3000/favorites/check?email=${user.email}&artwork_id=${artDetails._id}`
+          `http://localhost:3000/favorites/check?email=${user.email}&artwork_id=${artDetails._id}`,
+          {
+            headers: {
+              authorization: `bearer ${user.accessToken}`,
+            },
+          }
         );
         const data = await response.json();
-        
+
         if (isMounted && data.success) {
           setIsFavorite(data.isFavorite);
         }
@@ -56,9 +85,9 @@ const ArtworksDetails = () => {
     return () => {
       isMounted = false;
     };
-  }, [user?.email, artDetails._id]);
+  }, [user?.email, artDetails?._id, user?.accessToken]);
 
-  if (loading || isCheckingFavorite) {
+  if (loading || isCheckingFavorite || loadingData || !artDetails) {
     return <LoadingSpinner />;
   }
 
@@ -95,10 +124,12 @@ const ArtworksDetails = () => {
     };
 
     if (newState) {
-      // ADD Favorite
       fetch("http://localhost:3000/favorites", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `bearer ${user.accessToken}`,
+        },
         body: JSON.stringify(payload),
       })
         .then((res) => res.json())
@@ -117,17 +148,20 @@ const ArtworksDetails = () => {
           }
         })
         .catch((error) => {
-          // Revert on error
           setIsFavorite(previousState);
           setLikesCount(previousCount);
           toast.error("Something went wrong!");
           console.error(error);
         });
     } else {
-      // REMOVE Favorite
       fetch(
         `http://localhost:3000/favorites?email=${user.email}&artwork_id=${artDetails._id}`,
-        { method: "DELETE" }
+        {
+          method: "DELETE",
+          headers: {
+            authorization: `bearer ${user.accessToken}`,
+          },
+        }
       )
         .then((res) => res.json())
         .then((data) => {

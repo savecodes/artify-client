@@ -1,5 +1,5 @@
-import { useContext } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContext";
 import {
   DollarSign,
@@ -17,12 +17,33 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import Swal from "sweetalert2";
 
 const UpdateMyArtworks = () => {
-  const { loading } = useContext(AuthContext);
-  const data = useLoaderData();
-  const artDetails = data.result;
+  const { user, loading } = useContext(AuthContext);
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  if (loading) {
+  const [artDetails, setArtDetails] = useState(null);
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/my-gallery/${id}`, {
+          headers: { authorization: `bearer ${user.accessToken}` },
+        });
+        const data = await res.json();
+        setArtDetails(data.result);
+      } catch (err) {
+        console.error(err);
+        Swal.fire("Error!", "Failed to load artwork!", "error");
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    loadData();
+  }, [id, user?.accessToken]);
+
+  if (loading || loadingData || !artDetails) {
     return <LoadingSpinner />;
   }
 
@@ -48,7 +69,6 @@ const UpdateMyArtworks = () => {
       visibility: e.target.visibility.value,
     };
 
-    // Confirmation before submitting
     Swal.fire({
       title: "Do you want to save the changes?",
       showDenyButton: true,
@@ -59,12 +79,14 @@ const UpdateMyArtworks = () => {
       if (result.isConfirmed) {
         fetch(`http://localhost:3000/my-gallery/edit/${artDetails._id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `bearer ${user.accessToken}`,
+          },
           body: JSON.stringify(formData),
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log(data);
             if (data.success) {
               Swal.fire(
                 "Saved!",
@@ -78,8 +100,8 @@ const UpdateMyArtworks = () => {
             }
           })
           .catch((error) => {
-            console.log(error.message);
             Swal.fire("Error!", "Something went wrong!", "error");
+            console.log(error);
           });
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
@@ -124,9 +146,8 @@ const UpdateMyArtworks = () => {
                 type="url"
                 name="image_url"
                 defaultValue={artDetails.artwork_image || artDetails.image}
-                placeholder="https://your-image-url.jpg"
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
@@ -140,9 +161,8 @@ const UpdateMyArtworks = () => {
                 type="text"
                 name="title"
                 defaultValue={artDetails.title}
-                placeholder="Artwork title"
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
               />
             </div>
 
@@ -156,8 +176,7 @@ const UpdateMyArtworks = () => {
                 <select
                   name="category"
                   defaultValue={artDetails.category}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -176,9 +195,7 @@ const UpdateMyArtworks = () => {
                   type="text"
                   name="medium_tools"
                   defaultValue={artDetails.medium_tools}
-                  placeholder="e.g. Oil on Canvas"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 />
               </div>
             </div>
@@ -193,9 +210,7 @@ const UpdateMyArtworks = () => {
                 name="description"
                 defaultValue={artDetails.description}
                 rows="4"
-                placeholder="Describe your artwork..."
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 resize-none"
               />
             </div>
 
@@ -210,9 +225,7 @@ const UpdateMyArtworks = () => {
                   type="text"
                   name="dimensions"
                   defaultValue={artDetails.dimensions}
-                  placeholder="24x36 inches"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 />
               </div>
 
@@ -225,10 +238,8 @@ const UpdateMyArtworks = () => {
                   type="number"
                   name="price"
                   defaultValue={artDetails.price}
-                  placeholder="350"
                   min="0"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 />
               </div>
 
@@ -240,8 +251,7 @@ const UpdateMyArtworks = () => {
                 <select
                   name="visibility"
                   defaultValue={artDetails.visibility}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 >
                   <option value="public">Public</option>
                   <option value="private">Private</option>
@@ -249,11 +259,11 @@ const UpdateMyArtworks = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full py-4 px-6 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-pink-600 hover:via-purple-700 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
+                className="w-full py-4 px-6 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg flex items-center justify-center"
               >
                 <Save size={20} />
                 <span>Save Changes</span>

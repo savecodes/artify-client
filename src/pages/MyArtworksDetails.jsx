@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { useState, useContext, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router";
 import {
   Heart,
   Calendar,
@@ -18,18 +18,44 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import Swal from "sweetalert2";
 
 const MyArtworksDetails = () => {
-  const data = useLoaderData();
-  const artDetails = data.result;
-  const { loading, user } = useContext(AuthContext);
+  const { id } = useParams();
   const navigate = useNavigate();
+  const { loading, user } = useContext(AuthContext);
 
-  const likesCount = artDetails.likes_count || 0;
+  const [artDetails, setArtDetails] = useState(null);
+  const [loadingData, setLoadingData] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  if (loading) {
+  const likesCount = artDetails?.likes_count || 0;
+
+  // Fetch API inside component
+  useEffect(() => {
+    const loadArtwork = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/my-gallery/${id}`, {
+          headers: {
+            authorization: `bearer ${user.accessToken}`,
+          },
+        });
+        const data = await res.json();
+        setArtDetails(data.result);
+      } catch (error) {
+        console.error("Error loading artwork:", error);
+        toast.error("Failed to load artwork");
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    loadArtwork();
+  }, [id, user?.accessToken]);
+
+  // Loading state (auth + data)
+  if (loading || loadingData || !artDetails) {
     return <LoadingSpinner />;
   }
 
+  // Delete function
   const handleDelete = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -44,17 +70,15 @@ const MyArtworksDetails = () => {
         setIsDeleting(true);
 
         fetch(`http://localhost:3000/my-gallery/${artDetails._id}`, {
+          headers: { authorization: `bearer ${user.accessToken}` },
           method: "DELETE",
         })
           .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-
+          .then(() => {
             Swal.fire({
               title: "Deleted!",
               text: "Artwork deleted successfully!",
               icon: "success",
-              position: "center",
               timer: 1500,
               showConfirmButton: false,
             });
@@ -66,7 +90,6 @@ const MyArtworksDetails = () => {
               title: "Error!",
               text: error.message,
               icon: "error",
-              position: "center",
             });
             setIsDeleting(false);
           });
@@ -74,8 +97,8 @@ const MyArtworksDetails = () => {
     });
   };
 
+  // Share function
   const handleShare = () => {
-    // Copy link to clipboard
     const link = window.location.href;
     navigator.clipboard.writeText(link);
     toast.success("🔗 Link copied to clipboard!", {
@@ -84,6 +107,7 @@ const MyArtworksDetails = () => {
     });
   };
 
+  // Date formatting
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString.$date || dateString);
@@ -107,7 +131,7 @@ const MyArtworksDetails = () => {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left Side - Image */}
+          {/* Left Side */}
           <div className="space-y-6">
             <div className="relative group overflow-hidden rounded-2xl shadow-2xl">
               <img
@@ -116,7 +140,7 @@ const MyArtworksDetails = () => {
                 className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
-              {/* Visibility Badge */}
+              {/* Visibility */}
               <div className="absolute top-4 right-4 flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-lg">
                 <Eye size={16} className="text-purple-500" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
@@ -124,7 +148,7 @@ const MyArtworksDetails = () => {
                 </span>
               </div>
 
-              {/* Like Count Badge */}
+              {/* Likes */}
               <div className="absolute bottom-4 left-4 flex items-center space-x-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-lg">
                 <Heart
                   size={16}
@@ -137,7 +161,7 @@ const MyArtworksDetails = () => {
               </div>
             </div>
 
-            {/* Artist Info Card */}
+            {/* Artist Info */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-4">
                 <img
@@ -166,9 +190,9 @@ const MyArtworksDetails = () => {
             </div>
           </div>
 
-          {/* Right Side - Details */}
+          {/* Right Side */}
           <div className="space-y-6">
-            {/* Title Section */}
+            {/* Title */}
             <div>
               <div className="inline-flex items-center space-x-2 mb-3">
                 <Tag size={20} className="text-pink-500" />
@@ -176,22 +200,22 @@ const MyArtworksDetails = () => {
                   {artDetails.category}
                 </span>
               </div>
+
               <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
                 {artDetails.title}
               </h1>
+
               <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                 {artDetails.description}
               </p>
             </div>
 
-            {/* Details Grid */}
+            {/* Grid Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Medium */}
               <div className="bg-linear-to-br from-pink-100 to-purple-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-pink-200 dark:border-gray-600">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
-                    <Palette size={20} className="text-pink-500" />
-                  </div>
+                  <Palette size={20} className="text-pink-500" />
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                       Medium
@@ -206,9 +230,7 @@ const MyArtworksDetails = () => {
               {/* Dimensions */}
               <div className="bg-linear-to-br from-blue-100 to-purple-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-blue-200 dark:border-gray-600">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
-                    <Ruler size={20} className="text-blue-500" />
-                  </div>
+                  <Ruler size={20} className="text-blue-500" />
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                       Dimensions
@@ -223,9 +245,7 @@ const MyArtworksDetails = () => {
               {/* Price */}
               <div className="bg-linear-to-br from-green-100 to-emerald-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-green-200 dark:border-gray-600">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
-                    <DollarSign size={20} className="text-green-500" />
-                  </div>
+                  <DollarSign size={20} className="text-green-500" />
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                       Price
@@ -237,12 +257,10 @@ const MyArtworksDetails = () => {
                 </div>
               </div>
 
-              {/* Created Date */}
+              {/* Date */}
               <div className="bg-linear-to-br from-purple-100 to-pink-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-purple-200 dark:border-gray-600">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
-                    <Calendar size={20} className="text-purple-500" />
-                  </div>
+                  <Calendar size={20} className="text-purple-500" />
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                       Created
@@ -257,38 +275,38 @@ const MyArtworksDetails = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3 pt-4">
-              {/* Edit Button */}
+              {/* Edit */}
               <Link
                 to={`/my-gallery/edit/${artDetails._id}`}
                 disabled={isDeleting}
-                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-indigo-700 transform hover:-translate-y-0.5 transition-all"
               >
                 <Edit size={24} />
                 <span>Edit Artwork</span>
               </Link>
 
-              {/* Delete Button */}
+              {/* Delete */}
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-red-500 to-pink-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-red-600 hover:to-pink-700 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-red-500 to-pink-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl hover:from-red-600 hover:to-pink-700 transform hover:-translate-y-0.5 transition-all"
               >
                 <Trash2 size={24} />
                 <span>{isDeleting ? "Deleting..." : "Delete Artwork"}</span>
               </button>
 
-              {/* Share Button */}
+              {/* Share */}
               <button
                 onClick={handleShare}
                 disabled={isDeleting}
-                className="w-full py-4 px-6 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-purple-500 dark:border-purple-400 font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-purple-50 dark:hover:bg-gray-600 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full py-4 px-6 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-purple-500 font-semibold text-lg shadow-lg hover:bg-purple-50 dark:hover:bg-gray-600 transform hover:-translate-y-0.5 transition-all"
               >
                 <Share2 size={24} />
                 <span>Share Artwork</span>
               </button>
             </div>
 
-            {/* Management Info */}
+            {/* Info */}
             <div className="bg-linear-to-r from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-pink-200 dark:border-gray-600">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
                 <span className="text-pink-500">ℹ️</span>
@@ -297,22 +315,15 @@ const MyArtworksDetails = () => {
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li className="flex items-start space-x-2">
                   <span className="text-pink-500 mt-0.5">•</span>
-                  <span>
-                    You can edit your artwork details at any time to update
-                    information
-                  </span>
+                  <span>You can edit your artwork details anytime</span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-purple-500 mt-0.5">•</span>
-                  <span>
-                    Deleting an artwork is permanent and cannot be undone
-                  </span>
+                  <span>Deleting an artwork is permanent</span>
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-blue-500 mt-0.5">•</span>
-                  <span>
-                    Share your artwork with others using the share button
-                  </span>
+                  <span>Share your artwork with friends easily</span>
                 </li>
               </ul>
             </div>
