@@ -45,7 +45,7 @@ ARTIFY is an online art-sharing platform where artists can upload their artworks
 
 1. **Clone the project**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/savecodes/artify-client
    cd artify-client
    ```
 
