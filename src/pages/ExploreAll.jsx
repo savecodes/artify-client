@@ -27,10 +27,11 @@ const ExploreAll = () => {
 
   const filtered = rawArtworks.filter((art) => {
     const matchSearch =
-      art.title.toLowerCase().includes(search.toLowerCase()) ||
-      art.artistName.toLowerCase().includes(search.toLowerCase());
+      (art?.title?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (art?.artist_name?.toLowerCase() || "").includes(search.toLowerCase());
 
     const matchCategory = category === "All" || art.category === category;
+
     return matchSearch && matchCategory;
   });
 

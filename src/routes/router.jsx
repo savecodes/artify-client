@@ -15,6 +15,7 @@ import MyArtworksDetails from "../pages/MyArtworksDetails";
 import UpdateMyArtworks from "../pages/UpdateMyArtworks";
 import { Suspense } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
+import NotFound from "../components/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
         element: <ForgotPassword />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
