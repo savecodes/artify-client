@@ -1,17 +1,17 @@
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../../context/AuthContext";
 import LatestArtworksCard from "./LatestArtworksCard";
 import { Link } from "react-router";
-import LoadingSpinner from "../LoadingSpinner";
 
 const LatestArtworks = ({ latestArtworks }) => {
-    const { loading } = useContext(AuthContext);
-    if (loading) {
-      return <LoadingSpinner />;
-    }
+  const { loading } = useContext(AuthContext);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
   return (
-    <div className="w-10/12 mx-auto px-4 py-16">
-      {/* Header */}
+    <div className="py-16 md:py-24">
+      <div className="max-w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10">
         <div>
@@ -47,7 +47,8 @@ const LatestArtworks = ({ latestArtworks }) => {
         )}
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default LatestArtworks;

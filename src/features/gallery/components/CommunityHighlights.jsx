@@ -1,25 +1,24 @@
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { Link } from "react-router";
 import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { useRef } from "react";
+import { useRef, useContext } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import LoadingSpinner from "../LoadingSpinner";
+import { AuthContext } from "../../../context/AuthContext";
 
 const CommunityHighlights = ({ highlights }) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
-    const { loading } = useContext(AuthContext);
-    if (loading) {
-      return <LoadingSpinner />;
-    }
+  const { loading } = useContext(AuthContext);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <div className="bg-linear-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 pb-15">
-      <div className="w-10/12 mx-auto px-4 py-16 relative">
+    <div className="bg-linear-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 py-16 md:py-24">
+      <div className="max-w-11/12 mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
           <div>
@@ -90,6 +89,7 @@ const CommunityHighlights = ({ highlights }) => {
                   src={art.artwork_image}
                   alt={art.title}
                   className="w-full h-48 object-cover transform hover:scale-105 transition duration-500"
+                  loading="lazy"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">

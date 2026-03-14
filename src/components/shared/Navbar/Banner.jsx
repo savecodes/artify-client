@@ -4,9 +4,9 @@ import { Typewriter } from "react-simple-typewriter";
 import { useNavigate } from "react-router";
 import { ArrowRight } from "lucide-react";
 import "react-image-gallery/styles/css/image-gallery.css";
-import slider1 from "../../assets/Untitled_design_53.webp";
-import slider2 from "../../assets/Untitled_design_56.webp";
-import slider3 from "../../assets/Untitled_design_59.webp";
+import slider1 from "../../../assets/Untitled_design_53.webp";
+import slider2 from "../../../assets/Untitled_design_56.webp";
+import slider3 from "../../../assets/Untitled_design_59.webp";
 
 const Banner = () => {
   const navigate = useNavigate();

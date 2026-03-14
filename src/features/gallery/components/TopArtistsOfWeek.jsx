@@ -1,16 +1,16 @@
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { Link } from "react-router";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../../context/AuthContext";
 import { useContext } from "react";
-import LoadingSpinner from "../LoadingSpinner";
 
 const TopArtistsOfWeek = ({ topArtists }) => {
-    const { loading } = useContext(AuthContext);
-    if (loading) {
-      return <LoadingSpinner />;
-    }
+  const { loading } = useContext(AuthContext);
+  if (loading) {
+    return <LoadingSpinner />;
+  }
   return (
-    <div className="bg-linear-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="w-10/12 mx-auto px-4 py-16 ">
+    <div className="bg-linear-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 py-16 md:py-24">
+      <div className="max-w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-2 text-gray-800 dark:text-gray-100">

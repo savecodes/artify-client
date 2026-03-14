@@ -1,9 +1,9 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { Menu, X, Settings, LogOut, Sun, Moon } from "lucide-react";
-import Logo from "../../assets/logo.png";
-import { AuthContext } from "../../context/AuthContext";
-import LoadingSpinner from "../LoadingSpinner";
+import Logo from "../../../assets/logo.png";
+import { AuthContext } from "../../../context/AuthContext";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 
 const Navbar = () => {
   const { user, loading, logOut } = useContext(AuthContext);
@@ -36,12 +36,10 @@ const Navbar = () => {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 py-2">
         <div className="w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 shrink-0">
               <img src={Logo} alt="Logo" className="h-8 w-auto" />
             </Link>
 
-            {/* Desktop Menu */}
             <div className="hidden lg:flex items-center space-x-1">
               <Link to="/" className={isActive("/")}>
                 Home
@@ -60,9 +58,7 @@ const Navbar = () => {
               </Link>
             </div>
 
-            {/* Right Side */}
             <div className="flex items-center space-x-3 shrink-0">
-              {/* Theme Toggle */}
               <button
                 onClick={handleTheme}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
@@ -77,8 +73,7 @@ const Navbar = () => {
                   <Sun size={20} className="text-gray-700 dark:text-gray-300" />
                 )}
               </button>
-
-              {/* Desktop: Auth Area */}
+              
               <div className="hidden lg:flex items-center space-x-3">
                 {loading ? (
                   <LoadingSpinner />
@@ -130,7 +125,6 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -142,7 +136,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
       <div
         className={`fixed inset-y-0 right-0 w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300 z-50 lg:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
@@ -158,34 +151,26 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile User Info */}
         {user && (
           <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <LoadingSpinner />
+            <div className="flex items-center space-x-3">
+              <img
+                src={user.photoURL || "/default-avatar.png"}
+                alt={user.displayName}
+                className="w-12 h-12 rounded-full border-2 border-pink-500 object-cover"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                  {user.displayName || "User"}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {user.email}
+                </p>
               </div>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <img
-                  src={user.photoURL || "/default-avatar.png"}
-                  alt={user.displayName}
-                  className="w-12 h-12 rounded-full border-2 border-pink-500 object-cover"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                    {user.displayName || "User"}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {user.email}
-                  </p>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         )}
 
-        {/* Mobile Links */}
         <div className="p-4 space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
           <Link
             to="/"
@@ -225,7 +210,6 @@ const Navbar = () => {
 
           <div className="border-t border-gray-200 dark:border-gray-800 my-4"></div>
 
-          {/* Mobile Auth Actions */}
           {loading ? (
             <div className="flex justify-center py-6">
               <LoadingSpinner />
@@ -270,7 +254,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Overlay */}
       {isMenuOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"

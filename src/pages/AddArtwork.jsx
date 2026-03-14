@@ -12,9 +12,11 @@ import {
   Upload,
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
+import { artworkService } from "../services/artworkService";
+import { CATEGORIES } from "../constants";
 
 const AddArtwork = () => {
   const { user, loading } = useContext(AuthContext);
@@ -27,15 +29,7 @@ const AddArtwork = () => {
     return <LoadingSpinner />;
   }
 
-  const categories = [
-    "Digital Art",
-    "Painting",
-    "Concept Art",
-    "Illustration",
-    "Photography",
-  ];
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -55,33 +49,25 @@ const AddArtwork = () => {
       create_date: new Date(),
     };
 
-    fetch("https://artify-server-eight.vercel.app/add-artworks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `bearer ${user.accessToken}`,
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setArtworkData(data); // Save fetch data to state
-        toast.success("🎨 Artwork added successfully!", {
-          position: "top-center",
-        });
-        setIsSubmitting(false);
-        navigate("/explore");
-      })
-      .catch((error) => {
-        toast.error(error.message, { position: "top-center" });
-        setIsSubmitting(false);
+    try {
+      const data = await artworkService.addArtwork(formData, user.accessToken);
+      setArtworkData(data);
+      toast.success("🎨 Artwork added successfully!", {
+        position: "top-center",
       });
+      navigate("/explore");
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message, {
+        position: "top-center",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-6 px-4">
       <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 dark:border-gray-700">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-linear-to-br from-pink-500 to-purple-600 rounded-full mb-3">
             <Palette size={28} className="text-white" />
@@ -94,9 +80,7 @@ const AddArtwork = () => {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Image URL */}
           <div>
             <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               <Image size={16} className="mr-2 text-pink-500" />
@@ -111,7 +95,6 @@ const AddArtwork = () => {
             />
           </div>
 
-          {/* Title */}
           <div>
             <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               <FileText size={16} className="mr-2 text-purple-500" />
@@ -126,7 +109,6 @@ const AddArtwork = () => {
             />
           </div>
 
-          {/* Artist Name */}
           <div>
             <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               <User size={16} className="mr-2 text-blue-500" />
@@ -136,14 +118,13 @@ const AddArtwork = () => {
               type="text"
               name="artist_name"
               readOnly
-              defaultValue={user.displayName}
+              defaultValue={user?.displayName || ""}
               placeholder="Your name"
               required
               className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* Category + Medium */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
@@ -155,7 +136,7 @@ const AddArtwork = () => {
                 required
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500"
               >
-                {categories.map((cat) => (
+                {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>
@@ -178,7 +159,6 @@ const AddArtwork = () => {
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               <FileText size={16} className="mr-2 text-blue-500" />
@@ -193,7 +173,6 @@ const AddArtwork = () => {
             ></textarea>
           </div>
 
-          {/* Dimensions + Price + Visibility */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
@@ -240,7 +219,6 @@ const AddArtwork = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -255,7 +233,6 @@ const AddArtwork = () => {
           </button>
         </form>
 
-        {/* Optional: show artwork preview after adding */}
         {artworkData && (
           <div className="mt-6 border-t pt-4">
             <h2 className="text-lg font-bold text-gray-700 dark:text-gray-200">

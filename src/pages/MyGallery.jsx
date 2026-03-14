@@ -1,30 +1,31 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
+import { Link } from "react-router";
 import { AuthContext } from "../context/AuthContext";
-import MyGalleryCard from "../components/Main/MyGalleryCard";
-import LoadingSpinner from "../components/LoadingSpinner";
+import MyGalleryCard from "../features/gallery/components/MyGalleryCard";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { Palette, ImageIcon, Sparkles } from "lucide-react";
+import { artworkService } from "../services/artworkService";
 
 const MyGallery = () => {
   const { user } = useContext(AuthContext);
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchMyGallery = useCallback(async () => {
     if (!user?.email) return;
-    fetch(
-      `https://artify-server-eight.vercel.app/my-gallery?email=${user.email}`,
-      {
-        headers: {
-          authorization: `bearer ${user.accessToken}`,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setGallery(data.result);
-        setLoading(false);
-      });
+    try {
+      const data = await artworkService.getMyGallery(user.email, user.accessToken);
+      setGallery(data.result);
+    } catch (error) {
+      console.error("Error fetching gallery:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [user?.email, user?.accessToken]);
+
+  useEffect(() => {
+    fetchMyGallery();
+  }, [fetchMyGallery]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -33,7 +34,6 @@ const MyGallery = () => {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-pink-500 to-purple-600 rounded-full mb-4 shadow-lg">
             <Palette size={32} className="text-white" />
@@ -45,7 +45,6 @@ const MyGallery = () => {
             Your personal collection of artworks
           </p>
 
-          {/* Stats Bar */}
           {gallery.length > 0 && (
             <div className="mt-6 inline-flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg border border-gray-200 dark:border-gray-700">
               <Sparkles size={20} className="text-purple-500" />
@@ -57,7 +56,6 @@ const MyGallery = () => {
           )}
         </div>
 
-        {/* Gallery Grid */}
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {gallery.length === 0 ? (
             <div className="col-span-full">
@@ -72,13 +70,13 @@ const MyGallery = () => {
                   Your gallery is empty. Start creating and sharing your amazing
                   artworks with the world!
                 </p>
-                <a
-                  href="/add-artwork"
+                <Link
+                  to="/add-artwork"
                   className="inline-flex items-center space-x-2 px-6 py-3 bg-linear-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-pink-600 hover:to-purple-700 transform hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <Palette size={20} />
                   <span>Add Your First Artwork</span>
-                </a>
+                </Link>
               </div>
             </div>
           ) : (
@@ -86,7 +84,6 @@ const MyGallery = () => {
           )}
         </div>
 
-        {/* Footer Info */}
         {gallery.length > 0 && (
           <div className="mt-12 text-center">
             <div className="bg-linear-to-r from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-pink-200 dark:border-gray-600 max-w-2xl mx-auto">

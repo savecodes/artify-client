@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -13,8 +13,10 @@ import {
   Save,
   ArrowLeft,
 } from "lucide-react";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 import Swal from "sweetalert2";
+import { artworkService } from "../services/artworkService";
+import { CATEGORIES } from "../constants";
 
 const UpdateMyArtworks = () => {
   const { user, loading } = useContext(AuthContext);
@@ -24,41 +26,28 @@ const UpdateMyArtworks = () => {
   const [artDetails, setArtDetails] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const res = await fetch(
-          `https://artify-server-eight.vercel.app/my-gallery/${id}`,
-          {
-            headers: { authorization: `bearer ${user.accessToken}` },
-          }
-        );
-        const data = await res.json();
-        setArtDetails(data.result);
-      } catch (err) {
-        console.error(err);
-        Swal.fire("Error!", "Failed to load artwork!", "error");
-      } finally {
-        setLoadingData(false);
-      }
-    };
-
-    loadData();
+  const loadData = useCallback(async () => {
+    if (!id || !user?.accessToken) return;
+    try {
+      const data = await artworkService.getMyArtworkById(id, user.accessToken);
+      setArtDetails(data.result);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error!", "Failed to load artwork!", "error");
+    } finally {
+      setLoadingData(false);
+    }
   }, [id, user?.accessToken]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   if (loading || loadingData || !artDetails) {
     return <LoadingSpinner />;
   }
 
-  const categories = [
-    "Digital Art",
-    "Painting",
-    "Concept Art",
-    "Illustration",
-    "Photography",
-  ];
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
@@ -72,63 +61,41 @@ const UpdateMyArtworks = () => {
       visibility: e.target.visibility.value,
     };
 
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Do you want to save the changes?",
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: "Save",
       denyButtonText: `Don't save`,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(
-          `https://artify-server-eight.vercel.app/my-gallery/edit/${artDetails._id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: `bearer ${user.accessToken}`,
-            },
-            body: JSON.stringify(formData),
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.success) {
-              Swal.fire(
-                "Saved!",
-                "Artwork updated successfully!",
-                "success"
-              ).then(() => {
-                navigate(`/my-gallery/${artDetails._id}`);
-              });
-            } else {
-              Swal.fire("Failed!", "Failed to update artwork.", "error");
-            }
-          })
-          .catch((error) => {
-            Swal.fire("Error!", "Something went wrong!", "error");
-            console.log(error);
-          });
-      } else if (result.isDenied) {
-        Swal.fire("Changes are not saved", "", "info");
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        await artworkService.updateArtwork(artDetails._id, formData, user.accessToken);
+        Swal.fire("Saved!", "Artwork updated successfully!", "success").then(() => {
+          navigate(`/my-gallery/${artDetails._id}`);
+        });
+      } catch (error) {
+        Swal.fire("Error!", error.message || "Something went wrong!", "error");
+        console.error(error);
+      }
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
   };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-400 transition-colors flex items-center space-x-2"
+          className="mb-6 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-400 transition-colors flex items-center space-x-2 cursor-pointer"
         >
           <ArrowLeft size={20} />
           <span>Back</span>
         </button>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-pink-500 to-purple-600 rounded-full mb-4">
               <Palette size={32} className="text-white" />
@@ -142,7 +109,6 @@ const UpdateMyArtworks = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Image URL */}
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 <Image size={18} className="mr-2 text-pink-500" />
@@ -157,7 +123,6 @@ const UpdateMyArtworks = () => {
               />
             </div>
 
-            {/* Title */}
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 <FileText size={18} className="mr-2 text-purple-500" />
@@ -172,7 +137,6 @@ const UpdateMyArtworks = () => {
               />
             </div>
 
-            {/* Category + Medium */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -184,7 +148,7 @@ const UpdateMyArtworks = () => {
                   defaultValue={artDetails.category}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 >
-                  {categories.map((cat) => (
+                  {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
@@ -206,7 +170,6 @@ const UpdateMyArtworks = () => {
               </div>
             </div>
 
-            {/* Description */}
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 <FileText size={18} className="mr-2 text-blue-500" />
@@ -220,7 +183,6 @@ const UpdateMyArtworks = () => {
               />
             </div>
 
-            {/* Dimensions + Price + Visibility */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -265,11 +227,10 @@ const UpdateMyArtworks = () => {
               </div>
             </div>
 
-            {/* Submit */}
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full py-4 px-6 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg flex items-center justify-center"
+                className="w-full py-4 px-6 rounded-lg bg-linear-to-r from-pink-500 via-purple-600 to-blue-600 text-white font-semibold text-lg shadow-lg flex items-center justify-center space-x-2 cursor-pointer"
               >
                 <Save size={20} />
                 <span>Save Changes</span>
@@ -277,7 +238,6 @@ const UpdateMyArtworks = () => {
             </div>
           </form>
 
-          {/* Info */}
           <div className="mt-6 bg-linear-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4 border border-pink-200 dark:border-gray-600">
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
               💡 <span className="font-semibold">Note:</span> Original creation

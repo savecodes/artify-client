@@ -1,13 +1,13 @@
-import Footer from "../components/Footer/Footer";
-import Navbar from "../components/Heading/Navbar";
-import ScrollToTop from "../components/ScrollToTop";
+import Footer from "../shared/Footer/Footer";
+import Navbar from "../shared/Navbar/Navbar";
+import ScrollToTop from "../shared/ScrollToTop";
 import { Outlet } from "react-router";
 
-const HomeLayout = () => {
+const MainLayout = () => {
   return (
     <>
       <ScrollToTop />
-      <div className="flex flex-col">
+      <div className="flex flex-col min-h-screen">
         <header className="sticky top-0 z-50">
           <Navbar />
         </header>
@@ -22,4 +22,4 @@ const HomeLayout = () => {
   );
 };
 
-export default HomeLayout;
+export default MainLayout;

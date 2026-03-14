@@ -1,13 +1,22 @@
 import { Link } from "react-router";
-import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Github, X } from "lucide-react";
-import Logo from "../../assets/logo.png";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Github,
+  X,
+} from "lucide-react";
+import Logo from "../../../assets/logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="w-10/12 mx-auto px-4 py-12">
+      <div className="w-10/12 mx-auto px-4 pt-12 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="space-y-4">
@@ -15,7 +24,8 @@ const Footer = () => {
               <img src={Logo} alt="Logo" className="h-10 w-auto" />
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              Discover creativity and inspiration. Join our community of artists and art lovers to share, explore, and connect.
+              Discover creativity and inspiration. Join our community of artists
+              and art lovers to share, explore, and connect.
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-3 pt-2">
@@ -157,16 +167,16 @@ const Footer = () => {
                   href="mailto:support@artgallery.com"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
                 >
-                  support@artgallery.com
+                  rakibsbase@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-pink-500 shrink-0" />
                 <a
-                  href="tel:+8801234567890"
+                  href="tel:+8801776661141"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
                 >
-                  +880 123 456 7890
+                  +880 177 666 1141
                 </a>
               </li>
             </ul>
@@ -174,9 +184,18 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-200 dark:border-gray-800 mt-10 pt-8 text-center">
+        <div className="border-t border-gray-200 dark:border-gray-800 mt-4 pt-3 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             © {currentYear} Artify. All rights reserved.
+          </p>
+        </div>
+        {/* ── Developer Credit ── */}
+        <div className="border-t border-gray-200 dark:border-gray-800 mt-6 pt-4 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-500 tracking-wide">
+            Designed & Developed by{" "}
+            <span className="font-semibold bg-linear-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+              Rakib Aziz
+            </span>
           </p>
         </div>
       </div>

@@ -10,6 +10,7 @@ const MyFavoritesCard = ({ art }) => {
           src={art.artwork_image}
           alt={art.title}
           className="w-full h-full object-cover transform transition duration-500 group-hover:scale-110"
+          loading="lazy"
         />
         
         {/* Overlay with gradient */}
